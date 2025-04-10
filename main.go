@@ -39,6 +39,7 @@ var (
 	// Window Styles
 	wsOverlappedWindow = 0x00CF0000
 	wsVisible          = 0x10000000
+	wsChild            = 0x40000000  // Add WS_CHILD style
 	cwUseDefault       = -2147483648 //0x80000000
 
 	// Message Box Styles
@@ -338,11 +339,11 @@ func main() {
 		0,
 		"BUTTON",
 		buttonText,
-		uint32(wsVisible|bsPushButton),
-		50,
-		50,
-		100,
-		30,
+		uint32(wsChild|wsVisible|bsPushButton), // Add WS_CHILD style
+		50,  // x position
+		50,  // y position
+		200, // width - increased from 100 to 200
+		50,  // height - increased from 30 to 50
 		hwnd,
 		syscall.Handle(idButtonHello), // Set control ID here
 		instance,
@@ -353,12 +354,17 @@ func main() {
 	} else {
 		fmt.Fprintf(os.Stderr, "Button created successfully\n")
 
-		if !showTheWindow(buttonHwnd, 1) {
+		// Show the button with SW_SHOW (5) to ensure visibility
+		if !showTheWindow(buttonHwnd, 5) {
 			fmt.Fprintf(os.Stderr, "ShowWindow for button failed\n")
+		} else {
+			fmt.Fprintf(os.Stderr, "Button shown successfully\n")
 		}
 
 		if !updateTheWindow(buttonHwnd) {
 			fmt.Fprintf(os.Stderr, "UpdateWindow for button failed\n")
+		} else {
+			fmt.Fprintf(os.Stderr, "Button updated successfully\n")
 		}
 	}
 
