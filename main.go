@@ -50,10 +50,6 @@ var (
 	idButtonHello = 1001
 )
 
-type (
-	wndProc func(hwnd syscall.Handle, msg uint32, wparam, lparam uintptr) uintptr
-)
-
 type msg struct {
 	hwnd     syscall.Handle
 	message  uint32
