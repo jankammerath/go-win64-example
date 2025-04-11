@@ -244,6 +244,23 @@ func wndProcCallback(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) ui
 	return defWindowProc(hwnd, msg, wParam, lParam)
 }
 
+// sets the Window Theme of the provided hwn to "Explorer"
+func SetWindowTheme(hwnd syscall.Handle) {
+	themeAPI := syscall.NewLazyDLL("uxtheme.dll")
+	setWindowTheme := themeAPI.NewProc("SetWindowTheme")
+
+	// Set the theme to "Explorer"
+	ret, _, err := setWindowTheme.Call(
+		uintptr(hwnd),
+		uintptr(unsafe.Pointer(strToUint16Ptr("Explorer"))),
+		uintptr(unsafe.Pointer(nil)),
+	)
+
+	if ret != 0 {
+		fmt.Fprintf(os.Stderr, "SetWindowTheme failed: %v\n", err)
+	}
+}
+
 // Apply dark mode to a window
 func SetDarkMode(hwnd syscall.Handle, isDark bool) {
 	var darkMode int32
@@ -265,9 +282,8 @@ func SetDarkMode(hwnd syscall.Handle, isDark bool) {
 
 	// Add non-client rendering policy (equivalent to DWMWA_NCRENDERING_POLICY)
 	const DWMWA_NCRENDERING_POLICY = 2
-	const DWMNCRP_USEWINDOWSTYLE = 0
 
-	var ncrp int32 = DWMNCRP_USEWINDOWSTYLE
+	var ncrp int32 = 0 // DWNCRP_USEWINDOWSTYLE
 	dwmSetWindowAttribute.Call(
 		uintptr(hwnd),
 		uintptr(DWMWA_NCRENDERING_POLICY),
@@ -393,6 +409,7 @@ func main() {
 
 	fmt.Fprintf(os.Stderr, "Window created: %v\n", hwnd)
 	SetDarkMode(hwnd, windowsIsInDarkMode)
+	SetWindowTheme(hwnd)
 
 	if !showTheWindow(hwnd, 1) { // SW_SHOWNORMAL
 		fmt.Fprintf(os.Stderr, "ShowWindow failed\n")
