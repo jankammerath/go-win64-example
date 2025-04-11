@@ -355,7 +355,7 @@ func main() {
 		hInstance:     instance,
 		hIcon:         syscall.Handle(0),       // Use default icon
 		hCursor:       getLoadCursor(0, 32512), // IDC_ARROW
-		hbrBackground: syscall.Handle(5),       // COLOR_WINDOW+1
+		hbrBackground: syscall.Handle(5),       // COLOR_WINDOW
 		MenuName:      nil,
 		ClassName:     classNamePtr,
 		hIconSm:       syscall.Handle(0),
