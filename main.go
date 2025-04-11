@@ -412,8 +412,6 @@ func main() {
 	} else {
 		fmt.Fprintf(os.Stderr, "Button created successfully\n")
 
-		SetDarkMode(buttonHwnd, windowsIsInDarkMode)
-
 		// Show the button with SW_SHOW (5) to ensure visibility
 		if !showTheWindow(buttonHwnd, 5) {
 			fmt.Fprintf(os.Stderr, "ShowWindow for button failed\n")
