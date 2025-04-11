@@ -6,6 +6,14 @@ import (
 	"os"
 	"syscall"
 	"unsafe"
+
+	"golang.org/x/sys/windows/registry"
+)
+
+const (
+	WM_THEMECHANGED               = 0x031A
+	WM_SETTINGCHANGE              = 0x001A
+	DWMWA_USE_IMMERSIVE_DARK_MODE = 20
 )
 
 var (
@@ -232,6 +240,41 @@ func wndProcCallback(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) ui
 		return 0
 	}
 	return defWindowProc(hwnd, msg, wParam, lParam)
+}
+
+// Apply dark mode to a window
+func SetDarkMode(hwnd syscall.Handle, isDark bool) {
+	var darkMode int32
+	if isDark {
+		darkMode = 1
+	}
+
+	// Enable dark mode for window
+	dwmAPI := syscall.NewLazyDLL("dwmapi.dll")
+	dwmSetWindowAttribute := dwmAPI.NewProc("DwmSetWindowAttribute")
+	dwmSetWindowAttribute.Call(
+		uintptr(hwnd),
+		uintptr(DWMWA_USE_IMMERSIVE_DARK_MODE),
+		uintptr(unsafe.Pointer(&darkMode)),
+		unsafe.Sizeof(darkMode),
+	)
+}
+
+// Check if Windows is in dark mode
+func IsSystemInDarkMode() bool {
+	key, err := registry.OpenKey(registry.CURRENT_USER,
+		`SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize`, registry.QUERY_VALUE)
+	if err != nil {
+		return false
+	}
+	defer key.Close()
+
+	val, _, err := key.GetIntegerValue("AppsUseDarkTheme")
+	if err != nil {
+		return false
+	}
+
+	return val == 1
 }
 
 func main() {
