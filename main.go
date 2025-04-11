@@ -366,6 +366,14 @@ func main() {
 
 	fmt.Fprintf(os.Stderr, "Window created: %v\n", hwnd)
 
+	// check if dark mode is enabled
+	if IsSystemInDarkMode() {
+		fmt.Fprintf(os.Stderr, "System is in dark mode, applying to window\n")
+		SetDarkMode(hwnd, true)
+	} else {
+		fmt.Fprintf(os.Stderr, "System is not in dark mode\n")
+	}
+
 	if !showTheWindow(hwnd, 1) { // SW_SHOWNORMAL
 		fmt.Fprintf(os.Stderr, "ShowWindow failed\n")
 	} else {
