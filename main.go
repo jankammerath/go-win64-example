@@ -269,12 +269,15 @@ func IsSystemInDarkMode() bool {
 	}
 	defer key.Close()
 
-	val, _, err := key.GetIntegerValue("AppsUseDarkTheme")
+	val, _, err := key.GetIntegerValue("AppsUseLightTheme")
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading registry value: %v\n", err)
 		return false
 	}
 
-	return val == 1
+	fmt.Fprintf(os.Stderr, "AppsUseLightTheme value: %d\n", val)
+
+	return val == 0
 }
 
 func main() {
