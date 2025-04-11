@@ -1,0 +1,10 @@
+{
+    "editor.fontSize": 12,
+    "editor.tabSize": 4,
+    "go.buildFlags": [
+        "-tags",
+        "windows"
+    ],
+    "go.lintTool": "golangci-lint",
+    "go.formatTool": "goimports"
+}
