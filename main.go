@@ -408,8 +408,8 @@ func main() {
 	}
 
 	fmt.Fprintf(os.Stderr, "Window created: %v\n", hwnd)
-	SetDarkMode(hwnd, windowsIsInDarkMode)
 	SetWindowTheme(hwnd)
+	SetDarkMode(hwnd, windowsIsInDarkMode)
 
 	if !showTheWindow(hwnd, 1) { // SW_SHOWNORMAL
 		fmt.Fprintf(os.Stderr, "ShowWindow failed\n")
