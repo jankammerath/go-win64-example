@@ -254,11 +254,25 @@ func SetDarkMode(hwnd syscall.Handle, isDark bool) {
 	// Enable dark mode for window
 	dwmAPI := syscall.NewLazyDLL("dwmapi.dll")
 	dwmSetWindowAttribute := dwmAPI.NewProc("DwmSetWindowAttribute")
+
+	// Set dark mode attribute
 	dwmSetWindowAttribute.Call(
 		uintptr(hwnd),
 		uintptr(DWMWA_USE_IMMERSIVE_DARK_MODE),
 		uintptr(unsafe.Pointer(&darkMode)),
 		unsafe.Sizeof(darkMode),
+	)
+
+	// Add non-client rendering policy (equivalent to DWMWA_NCRENDERING_POLICY)
+	const DWMWA_NCRENDERING_POLICY = 2
+	const DWMNCRP_USEWINDOWSTYLE = 0
+
+	var ncrp int32 = DWMNCRP_USEWINDOWSTYLE
+	dwmSetWindowAttribute.Call(
+		uintptr(hwnd),
+		uintptr(DWMWA_NCRENDERING_POLICY),
+		uintptr(unsafe.Pointer(&ncrp)),
+		unsafe.Sizeof(ncrp),
 	)
 }
 
