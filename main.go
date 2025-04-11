@@ -90,6 +90,8 @@ type wndClassEx struct {
 	hIconSm       syscall.Handle
 }
 
+var windowsIsInDarkMode = false
+
 func strToUint16Ptr(s string) *uint16 {
 	utf16, err := syscall.UTF16FromString(s)
 	if err != nil {
@@ -321,6 +323,14 @@ func main() {
 
 	classNamePtr := strToUint16Ptr(className)
 
+	// check if dark mode is enabled and set the variable
+	windowsIsInDarkMode = IsSystemInDarkMode()
+	if windowsIsInDarkMode {
+		fmt.Fprintf(os.Stderr, "System is in dark mode, applying to window\n")
+	} else {
+		fmt.Fprintf(os.Stderr, "System is not in dark mode\n")
+	}
+
 	// Make sure cursor and icon are set
 	wc := wndClassEx{
 		Size:          uint32(unsafe.Sizeof(wndClassEx{})),
@@ -368,14 +378,7 @@ func main() {
 	}
 
 	fmt.Fprintf(os.Stderr, "Window created: %v\n", hwnd)
-
-	// check if dark mode is enabled
-	if IsSystemInDarkMode() {
-		fmt.Fprintf(os.Stderr, "System is in dark mode, applying to window\n")
-		SetDarkMode(hwnd, true)
-	} else {
-		fmt.Fprintf(os.Stderr, "System is not in dark mode\n")
-	}
+	SetDarkMode(hwnd, windowsIsInDarkMode)
 
 	if !showTheWindow(hwnd, 1) { // SW_SHOWNORMAL
 		fmt.Fprintf(os.Stderr, "ShowWindow failed\n")
@@ -408,6 +411,8 @@ func main() {
 		fmt.Fprintf(os.Stderr, "CreateWindow for button failed: %v, buttonHwnd: %v\n", err, buttonHwnd)
 	} else {
 		fmt.Fprintf(os.Stderr, "Button created successfully\n")
+
+		SetDarkMode(buttonHwnd, windowsIsInDarkMode)
 
 		// Show the button with SW_SHOW (5) to ensure visibility
 		if !showTheWindow(buttonHwnd, 5) {
